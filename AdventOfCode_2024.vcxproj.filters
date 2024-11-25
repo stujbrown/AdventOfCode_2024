@@ -1,0 +1,188 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+    <Filter Include="Inputs">
+      <UniqueIdentifier>{f5f12a7a-6b7d-4832-a39b-dc98068529d0}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\entry.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\days\day1.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\days\day2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\days\day3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\days\day4.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\days\day5.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\days\day6.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\days\day7.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\days\day8.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\days\day9.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\days\day10.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\days\day11.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\days\day12.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\days\day13.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\days\day14.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\days\day15.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\days\day16.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\days\day17.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\days\day18.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\days\day19.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\days\day20.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\days\day21.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\days\day22.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\days\day23.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\days\day24.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\days\day25.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\entry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\days\days.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="inputs\day1.txt">
+      <Filter>Inputs</Filter>
+    </Text>
+    <Text Include="inputs\day2.txt">
+      <Filter>Inputs</Filter>
+    </Text>
+    <Text Include="inputs\day3.txt">
+      <Filter>Inputs</Filter>
+    </Text>
+    <Text Include="inputs\day4.txt">
+      <Filter>Inputs</Filter>
+    </Text>
+    <Text Include="inputs\day5.txt">
+      <Filter>Inputs</Filter>
+    </Text>
+    <Text Include="inputs\day6.txt">
+      <Filter>Inputs</Filter>
+    </Text>
+    <Text Include="inputs\day7.txt">
+      <Filter>Inputs</Filter>
+    </Text>
+    <Text Include="inputs\day8.txt">
+      <Filter>Inputs</Filter>
+    </Text>
+    <Text Include="inputs\day9.txt">
+      <Filter>Inputs</Filter>
+    </Text>
+    <Text Include="inputs\day10.txt">
+      <Filter>Inputs</Filter>
+    </Text>
+    <Text Include="inputs\day11.txt">
+      <Filter>Inputs</Filter>
+    </Text>
+    <Text Include="inputs\day12.txt">
+      <Filter>Inputs</Filter>
+    </Text>
+    <Text Include="inputs\day13.txt">
+      <Filter>Inputs</Filter>
+    </Text>
+    <Text Include="inputs\day14.txt">
+      <Filter>Inputs</Filter>
+    </Text>
+    <Text Include="inputs\day15.txt">
+      <Filter>Inputs</Filter>
+    </Text>
+    <Text Include="inputs\day16.txt">
+      <Filter>Inputs</Filter>
+    </Text>
+    <Text Include="inputs\day17.txt">
+      <Filter>Inputs</Filter>
+    </Text>
+    <Text Include="inputs\day18.txt">
+      <Filter>Inputs</Filter>
+    </Text>
+    <Text Include="inputs\day19.txt">
+      <Filter>Inputs</Filter>
+    </Text>
+    <Text Include="inputs\day20.txt">
+      <Filter>Inputs</Filter>
+    </Text>
+    <Text Include="inputs\day21.txt">
+      <Filter>Inputs</Filter>
+    </Text>
+    <Text Include="inputs\day22.txt">
+      <Filter>Inputs</Filter>
+    </Text>
+    <Text Include="inputs\day23.txt">
+      <Filter>Inputs</Filter>
+    </Text>
+    <Text Include="inputs\day24.txt">
+      <Filter>Inputs</Filter>
+    </Text>
+    <Text Include="inputs\day25.txt">
+      <Filter>Inputs</Filter>
+    </Text>
+  </ItemGroup>
+</Project>

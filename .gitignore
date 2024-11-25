@@ -30,3 +30,12 @@
 *.exe
 *.out
 *.app
+.vs/
+x64/
+
+# Project files
+*.vcxproj.user
+*.xcworkspacedata
+AdventOfCode_2024.xcodeproj/project.xcworkspace/xcuserdata/
+AdventOfCode_2024.xcodeproj/xcuserdata/
+AdventOfCode_2024.xcodeproj/project.xcworkspace/xcshareddata/
