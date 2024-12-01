@@ -104,7 +104,7 @@
     <ClInclude Include="src\entry.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\days\days.h">
+    <ClInclude Include="src\days\aoc_days.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

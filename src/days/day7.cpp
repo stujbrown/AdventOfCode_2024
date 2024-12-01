@@ -1,5 +1,6 @@
-#include "days.h"
+#include "aoc_days.h"
 
-void aoc::day7()
+void aoc::day7(std::string_view inputFilePath)
 {
+	(void)inputFilePath;
 }

@@ -1,5 +1,5 @@
 #include "entry.h"
-#include "days/days.h"
+#include "days/aoc_days.h"
 
 #include <stdlib.h>
 #include <fstream>
@@ -27,39 +27,42 @@ void entry(const Args& args)
         std::cout << std::endl;
     }
     
-    #define DAY(number) case number: day##number(); break;
+    #define INVOKE_DAY(number) case number: day##number("inputs/day"#number".txt"); break;
+
     switch (dayToRun)
     {
-        DAY(1);
-        DAY(2);
-        DAY(3);
-        DAY(4);
-        DAY(5);
-        DAY(6);
-        DAY(7);
-        DAY(8);
-        DAY(9);
-        DAY(10);
-        DAY(11);
-        DAY(12);
-        DAY(13);
-        DAY(14);
-        DAY(15);
-        DAY(16);
-        DAY(17);
-        DAY(18);
-        DAY(19);
-        DAY(20);
-        DAY(21);
-        DAY(22);
-        DAY(23);
-        DAY(24);
-        DAY(25);
+        INVOKE_DAY(1);
+        INVOKE_DAY(2);
+        INVOKE_DAY(3);
+        INVOKE_DAY(4);
+        INVOKE_DAY(5);
+        INVOKE_DAY(6);
+        INVOKE_DAY(7);
+        INVOKE_DAY(8);
+        INVOKE_DAY(9);
+        INVOKE_DAY(10);
+        INVOKE_DAY(11);
+        INVOKE_DAY(12);
+        INVOKE_DAY(13);
+        INVOKE_DAY(14);
+        INVOKE_DAY(15);
+        INVOKE_DAY(16);
+        INVOKE_DAY(17);
+        INVOKE_DAY(18);
+        INVOKE_DAY(19);
+        INVOKE_DAY(20);
+        INVOKE_DAY(21);
+        INVOKE_DAY(22);
+        INVOKE_DAY(23);
+        INVOKE_DAY(24);
+        INVOKE_DAY(25);
             
         default:
             std::cout << "Invalid day\n";
             break;
     }
+
+    std::cout << std::endl << std::endl;
 }
 
 }
