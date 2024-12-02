@@ -4,16 +4,18 @@
 
 namespace
 {
+    inline int incrementIfEqual(int index, int indexToSkip) 
+    {
+        return (indexToSkip == index) ? (index + 1) : index; 
+    }
+
     bool checkRecord(const std::vector<int>& record, int skipIndex)
     {
         int changeDirection = 0;
         const size_t numRecordValues = (skipIndex != record.size() - 1) ? record.size() : record.size() - 1;
-        for (int i = (skipIndex != 0) ? 1 : 2; i < numRecordValues; i += (skipIndex != i) ? 1 : 2)
+        for (int i = incrementIfEqual(0, skipIndex) + 1; i < numRecordValues; i = incrementIfEqual(i, skipIndex) + 1)
         {
-            const int thisIndex = (skipIndex == i) ? (i + 1) : i;
-            const int lastIndex = (skipIndex == (i - 1)) ? (i - 2) : (i - 1);
-
-            const int change = record[thisIndex] - record[lastIndex];
+            const int change = record[incrementIfEqual(i, skipIndex)] - record[incrementIfEqual(i - 1, skipIndex)];
             if (changeDirection == 0)
                 changeDirection = (change > 0) ? 1 : ((change < 0) ? -1 : 0);
 
@@ -37,7 +39,7 @@ void aoc::day2(std::string_view inputFilePath)
         for (int val = -1; recordStream >> val;)
             record.emplace_back(val);
 
-        int isSafeForSkipIndex = -2;
+        int isSafeForSkipIndex = -2; // -2 == not safe, -1 == safe without any skips, 0 > safe with skip at index
         for (int skipIndex = -1; skipIndex < static_cast<int>(record.size()) && isSafeForSkipIndex == -2; ++skipIndex)
         {
             if (checkRecord(record, skipIndex))
