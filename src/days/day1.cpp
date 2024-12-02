@@ -32,6 +32,6 @@ void aoc::day1(std::string_view inputFilePath)
         similarityScore += (rightCountEntry != rightEntryCounts.end()) ? (left * rightCountEntry->second) : 0;
     }
 
-    std::print("Total difference: {}\n", diffTotal);
-    std::print("Total similarity score: {}\n", similarityScore);
+    std::println("Total difference: {}", diffTotal);
+    std::println("Total similarity score: {}", similarityScore);
 }
