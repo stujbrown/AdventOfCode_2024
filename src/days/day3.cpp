@@ -5,7 +5,7 @@
 void aoc::day3(std::string_view inputFilePath)
 {
     std::ifstream file(inputFilePath.data());
-    const std::string fileContents{ std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>() };
+    const std::string fileContents = std::string(std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>());
 
     const std::regex pattern("(do\\(\\)|don't\\(\\)|mul\\((\\d+),(\\d+)\\))");
     int total = 0, totalWithDoAndDontRules = 0;
