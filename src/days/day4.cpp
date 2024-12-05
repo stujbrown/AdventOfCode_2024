@@ -7,7 +7,7 @@
 namespace
 {
     using Coord = std::pair<int, int>;
-    const std::array<Coord, 8> standardEvalIncrements
+    const std::array<Coord, 8> evalIncrements
     {
         Coord{ 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 }, { 1, 1 }, { -1, -1 }, { 1, -1 }, { -1, 1 }
     };
@@ -26,7 +26,7 @@ void aoc::day4(std::string_view inputFilePath)
     {
         for (int x = 0; x < grid[y].length(); ++x)
         {
-            for (const Coord& increment : standardEvalIncrements)
+            for (const Coord& increment : evalIncrements)
             {
                 bool isFullMatch = true, isMasMatch = true;
                 for (int wordIndex = 0; wordIndex < 4; ++wordIndex)
@@ -35,7 +35,7 @@ void aoc::day4(std::string_view inputFilePath)
                     const int nextY = y + (increment.second * wordIndex);
 
                     if ((nextX < 0 || nextX >= grid[y].length()) || (nextY < 0 || nextY >= grid.size()) ||
-                        grid[nextY][nextX] != "SAMX"[wordIndex])  // Match backwards for the optional 'X' on the MAS matching
+                        grid[nextY][nextX] != "SAMX"[wordIndex])  // Match backwards for the missing 'X' on the intersections
                     {
                         isFullMatch = false;
 
