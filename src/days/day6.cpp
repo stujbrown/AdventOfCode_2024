@@ -15,31 +15,10 @@ namespace
 
     inline bool isInBounds(const Coord& gridSize, const Coord& c) { return c.x >= 0 && c.x < gridSize.x && c.y >= 0 && c.y < gridSize.y; };
     inline int index2DTo1D(const Coord& c, int gridWidth) { return c.y * gridWidth + c.x; };
-}
 
-void aoc::day6(std::string_view inputFilePath)
-{
-    std::ifstream file(inputFilePath.data());
-
-    Coord guardStartPos = { -1, -1 };
-    Coord guardStartFacing = { 0, -1 };
-
-    std::vector<char> grid;
-    std::string line;
-    for (int lineIndex = 0; std::getline(file, line); ++lineIndex)
+    int simulate(std::set<Coord>* outProspectiveBlockerPositions, const std::vector<char>& grid, const Coord& gridSize, Coord guardPos, Coord guardFacing, const std::optional<Coord>& blocker = std::nullopt)
     {
-        grid.append_range(line);
-        if (const size_t findPos = line.find('^'); findPos != std::string::npos)
-            guardStartPos = { (int)findPos, lineIndex };
-    }
-    const Coord gridSize = { (int)line.length(), (int)grid.size() / (int)line.length() };
-
-
-    std::vector<int> timesPositionsVisited; // 4 visits means another valid direction can't be taken without looping
-    timesPositionsVisited.resize(grid.size());
-
-    auto simulate = [&timesPositionsVisited](std::set<Coord>* outProspectiveBlockerPositions, const std::vector<char>& grid, const Coord& gridSize, Coord guardPos, Coord guardFacing, const std::optional<Coord>& blocker = std::nullopt) -> int
-    {
+        std::vector<int> timesPositionsVisited(grid.size()); // 4 visits means another valid direction can't be taken without looping
         std::fill(timesPositionsVisited.begin(), timesPositionsVisited.end(), 0);
 
         int numVisitedPositions = 0;
@@ -69,21 +48,35 @@ void aoc::day6(std::string_view inputFilePath)
 
         return numVisitedPositions;
     };
+}
+
+void aoc::day6(std::string_view inputFilePath)
+{
+    std::ifstream file(inputFilePath.data());
+
+    Coord guardStartPos = { -1, -1 };
+    Coord guardStartFacing = { 0, -1 };
+
+    std::vector<char> grid;
+    std::string line;
+    for (int lineIndex = 0; std::getline(file, line); ++lineIndex)
+    {
+        grid.append_range(line);
+        if (const size_t findPos = line.find('^'); findPos != std::string::npos)
+            guardStartPos = { (int)findPos, lineIndex };
+    }
+    const Coord gridSize = { (int)line.length(), (int)grid.size() / (int)line.length() };
 
     std::set<Coord> prospectiveBlockerPositions;
     const int numVisitedPositions = simulate(&prospectiveBlockerPositions, grid, gridSize, guardStartPos, guardStartFacing);
 
     std::atomic<size_t> numPossibleBlockerPositions = 0;
-    std::for_each(
-        std::execution::par_unseq,
-        prospectiveBlockerPositions.begin(),
-        prospectiveBlockerPositions.end(),
-        [&simulate, &numPossibleBlockerPositions, &grid, &gridSize, &guardStartPos, &guardStartFacing](const Coord& blockerPos)
+    std::for_each(std::execution::par_unseq, prospectiveBlockerPositions.begin(), prospectiveBlockerPositions.end(),
+        [&numPossibleBlockerPositions, &grid, &gridSize, &guardStartPos, &guardStartFacing](const Coord& blockerPos)
     {
         if ((blockerPos != guardStartPos) && simulate(nullptr, grid, gridSize, guardStartPos, guardStartFacing, blockerPos) == -1)
             ++numPossibleBlockerPositions;
     });
-
     std::println("Number of visited positions: {}", numVisitedPositions);
     std::println("Number of possible blocker positions: {}", numPossibleBlockerPositions.load());
 }
