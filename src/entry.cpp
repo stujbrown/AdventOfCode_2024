@@ -3,6 +3,7 @@
 
 #include <stdlib.h>
 #include <fstream>
+#include <chrono>
 
 namespace aoc
 {
@@ -29,6 +30,7 @@ void entry(const Args& args)
     
     #define INVOKE_DAY(number) case number: day##number("inputs/day"#number".txt"); break;
 
+    const auto startTime = std::chrono::high_resolution_clock::now();
     switch (dayToRun)
     {
         INVOKE_DAY(1);
@@ -62,7 +64,9 @@ void entry(const Args& args)
             break;
     }
 
-    std::cout << std::endl << std::endl;
+    const auto endTime = std::chrono::high_resolution_clock::now();
+    std::println("\nCompleted in {}ms", std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count());
+    std::cout << std::endl;
 }
 
 }

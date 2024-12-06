@@ -3,80 +3,87 @@
 #include <vector>
 #include <set>
 #include <optional>
+#include <algorithm>
+#include <execution>
 
 namespace
 {
-    struct Coord
-    {
-        int x = 0, y = 0;
-        Coord operator+(const Coord& rhs) { return Coord{ x + rhs.x, y + rhs.y }; };
-    };
+    struct Coord { int x = 0, y = 0; };
     bool operator<(const Coord& lhs, const Coord& rhs) { return lhs.x < rhs.x || (lhs.x == rhs.x && lhs.y < rhs.y); };
     bool operator==(const Coord& lhs, const Coord& rhs) { return lhs.x == rhs.x && lhs.y == rhs.y; };
+    inline Coord operator+(const Coord& lhs, const Coord& rhs) { return Coord{ lhs.x + rhs.x, lhs.y + rhs.y }; };
 
-    bool isInBounds(const std::vector<std::string>& grid, const Coord& c) { return c.x >= 0 && c.x < grid[0].length() && c.y >= 0 && c.y < grid.size(); };
-
-    std::optional<std::pair<size_t, size_t>> simulate(const std::vector<std::string>& grid, const Coord& guardStartPos, Coord guardFacing, const std::optional<Coord>& blocker = std::nullopt)
-    {
-        Coord guardPos = guardStartPos;
-
-        std::set<Coord> visitedPositions;
-        std::set<Coord> successfulBlockerPositions;
-        std::set<std::pair<Coord, Coord>> visitedPositionsWithDirections;
-        for (; isInBounds(grid, guardPos);)
-        {
-            visitedPositions.emplace(guardPos);
-
-            const Coord posInFront = guardPos + guardFacing;
-            if (isInBounds(grid, posInFront) && (grid[posInFront.y][posInFront.x] == '#' || (blocker.has_value() && posInFront == blocker)))
-            {
-                guardFacing = { -guardFacing.y, guardFacing.x }; // Rotate vector by 90 degrees
-            }
-            else // Rotate or move, not both as the guard can turn into a new obstacle
-            {
-                if (!blocker.has_value() && isInBounds(grid, posInFront) && !successfulBlockerPositions.contains(posInFront) && posInFront != guardStartPos)
-                {
-                    // Start a sub-simulation if not already in one
-                    if (!simulate(grid, guardStartPos, Coord{ 0, -1 }, posInFront).has_value()) // Place blocker immediately in-front of the guard to cause a deviation
-                    {
-                        successfulBlockerPositions.emplace(posInFront);
-                    }
-                }
-
-                guardPos = posInFront;
-
-                const auto guardPosAndFacing = std::make_pair(guardPos, guardFacing);
-                if (visitedPositionsWithDirections.contains(guardPosAndFacing))
-                    return std::nullopt;
-
-                visitedPositionsWithDirections.emplace(guardPosAndFacing);
-            }
-        }
-
-        return std::make_pair(visitedPositions.size(), successfulBlockerPositions.size());
-    }
+    inline bool isInBounds(const Coord& gridSize, const Coord& c) { return c.x >= 0 && c.x < gridSize.x && c.y >= 0 && c.y < gridSize.y; };
+    inline int index2DTo1D(const Coord& c, int gridWidth) { return c.y * gridWidth + c.x; };
 }
 
 void aoc::day6(std::string_view inputFilePath)
 {
     std::ifstream file(inputFilePath.data());
 
-    // 0 = up, 1 = right, 2 = down, 3 = left.
-    Coord guardPos = { -1, -1 };
-    Coord guardFacing = { 0, -1 };  // Guard always faces up to start.
+    Coord guardStartPos = { -1, -1 };
+    Coord guardStartFacing = { 0, -1 };
 
-    std::vector<std::string> grid;
-    for (std::string line; std::getline(file, line);)
+    std::vector<char> grid;
+    std::string line;
+    for (int lineIndex = 0; std::getline(file, line); ++lineIndex)
     {
-        grid.emplace_back(line);
+        grid.append_range(line);
         if (const size_t findPos = line.find('^'); findPos != std::string::npos)
-        {
-            guardPos = { (int)findPos, (int)grid.size() - 1 };
-        }
+            guardStartPos = { (int)findPos, lineIndex };
     }
+    const Coord gridSize = { (int)line.length(), (int)grid.size() / (int)line.length() };
 
-    const std::optional<std::pair<size_t, size_t>> visitedPositions = simulate(grid, guardPos, guardFacing);
 
-    std::println("Number of visited positions: {}", visitedPositions->first);
-    std::println("Number of possible blocker positions: {}", visitedPositions->second);
+    std::vector<int> timesPositionsVisited; // 4 visits means another valid direction can't be taken without looping
+    timesPositionsVisited.resize(grid.size());
+
+    auto simulate = [&timesPositionsVisited](std::set<Coord>* outProspectiveBlockerPositions, const std::vector<char>& grid, const Coord& gridSize, Coord guardPos, Coord guardFacing, const std::optional<Coord>& blocker = std::nullopt) -> int
+    {
+        std::fill(timesPositionsVisited.begin(), timesPositionsVisited.end(), 0);
+
+        int numVisitedPositions = 0;
+        while (isInBounds(gridSize, guardPos))
+        {
+            const size_t timesVisitedIndex = index2DTo1D(guardPos, gridSize.x);
+            const int timesVisited = timesPositionsVisited[timesVisitedIndex];
+            timesPositionsVisited[timesVisitedIndex] += 1;
+            if (timesVisited == 0)
+                ++numVisitedPositions;
+            else if (timesVisited >= 4)
+                return -1;
+
+            const Coord posInFront = guardPos + guardFacing;
+            if (isInBounds(gridSize, posInFront) && (grid[index2DTo1D(posInFront, gridSize.x)] == '#' || (blocker != std::nullopt && posInFront == blocker)))
+            {
+                guardFacing = { -guardFacing.y, guardFacing.x }; // Rotate by 90 degrees
+            }
+            else
+            {
+                if (outProspectiveBlockerPositions != nullptr && !outProspectiveBlockerPositions->contains(posInFront) && isInBounds(gridSize, posInFront))
+                    outProspectiveBlockerPositions->emplace(posInFront);
+
+                guardPos = posInFront;
+            }
+        }
+
+        return numVisitedPositions;
+    };
+
+    std::set<Coord> prospectiveBlockerPositions;
+    const int numVisitedPositions = simulate(&prospectiveBlockerPositions, grid, gridSize, guardStartPos, guardStartFacing);
+
+    std::atomic<size_t> numPossibleBlockerPositions = 0;
+    std::for_each(
+        std::execution::par_unseq,
+        prospectiveBlockerPositions.begin(),
+        prospectiveBlockerPositions.end(),
+        [&simulate, &numPossibleBlockerPositions, &grid, &gridSize, &guardStartPos, &guardStartFacing](const Coord& blockerPos)
+    {
+        if ((blockerPos != guardStartPos) && simulate(nullptr, grid, gridSize, guardStartPos, guardStartFacing, blockerPos) == -1)
+            ++numPossibleBlockerPositions;
+    });
+
+    std::println("Number of visited positions: {}", numVisitedPositions);
+    std::println("Number of possible blocker positions: {}", numPossibleBlockerPositions.load());
 }

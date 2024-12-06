@@ -1,5 +1,6 @@
 #include "aoc_days.h"
 
+#include <vector>
 #include <sstream>
 
 namespace

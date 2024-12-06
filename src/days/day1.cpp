@@ -1,5 +1,6 @@
 #include "aoc_days.h"
 
+#include <vector>
 #include <map>
 
 void aoc::day1(std::string_view inputFilePath)
