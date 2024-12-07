@@ -65,7 +65,8 @@ void entry(const Args& args)
     }
 
     const auto endTime = std::chrono::high_resolution_clock::now();
-    std::println("\nCompleted in {}ms", std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count());
+    const auto duration = endTime - startTime;
+    std::println("\nCompleted in {}ms ({}ns)", std::chrono::duration_cast<std::chrono::milliseconds>(duration).count(), std::chrono::duration_cast<std::chrono::nanoseconds>(duration).count());
     std::cout << std::endl;
 }
 
