@@ -1,16 +1,11 @@
 #include "aoc_days.h"
+#include "vec2.h"
 
 #include <vector>
 #include <ranges>
 #include <map>
 #include <set>
-
-namespace
-{
-    struct Coord { int x = -1, y = -1; };
-    bool operator<(const Coord& lhs, const Coord& rhs) { return lhs.x < rhs.x || (lhs.x == rhs.x && lhs.y < rhs.y); };
-    inline bool isInBounds(const Coord& c, size_t width, size_t height) { return c.x >= 0 && c.x < width && c.y >= 0 && c.y < height; };
-}
+#include <numeric>
 
 void aoc::day8(std::string_view inputFilePath)
 {
@@ -19,43 +14,47 @@ void aoc::day8(std::string_view inputFilePath)
     const std::vector<std::string> grid = std::ranges::to<std::vector<std::string>>(fileContents | std::views::split('\n')
         | std::views::filter([](const auto& x) { return std::distance(x.begin(), x.end()) > 0; }));
 
-    // Record all node positions first
-    std::multimap<char, Coord> frequencyPositions;
+    std::map<char, std::vector<Vec2>> frequencyPositions;
     for (int y = 0; y < grid.size(); ++y)
     {
         for (int x = 0; x < grid[0].length(); ++x)
         {
             if (const char val = grid[y][x]; val != '.')
             {
-                frequencyPositions.insert(std::make_pair(val, Coord{ x, y }));
+                const auto insertResult = frequencyPositions.insert(std::make_pair(val, std::vector<Vec2>{ Vec2{ x, y }}));
+                if (!insertResult.second)
+                    insertResult.first->second.push_back(Vec2{ x, y });
             }
         }
     }
 
-    std::set<Coord> antinodeLocations;
-    for (auto frequencyItr = frequencyPositions.begin(); frequencyItr != frequencyPositions.end(); )
-    {
-        const char frequency = frequencyItr->first;
-        auto firstItr = frequencyItr;
-        for (; firstItr != frequencyPositions.end() && firstItr->first == frequency; ++firstItr)
-        {
-            for (auto secondItr = frequencyItr; secondItr != frequencyPositions.end() && secondItr->first == frequency; ++secondItr)
-            {
-                if (firstItr != secondItr)
-                {
-                    const Coord diff = { secondItr->second.x - firstItr->second.x, secondItr->second.y - firstItr->second.y };
-                    // The other antinode is done from the other side once iterated operands swap over
-                    const Coord antinode = { firstItr->second.x - diff.x, firstItr->second.y - diff.y };
+    auto isInBounds = [&grid](const Vec2 & c) { return c.x >= 0 && c.x < grid[0].length() && c.y >= 0 && c.y < grid.size(); };
 
-                    if (isInBounds(antinode, grid[0].length(), grid.size()))
-                    {
-                        antinodeLocations.emplace(antinode);
-                    }
+    std::set<Vec2> priamryAntinodeLocations;
+    std::set<Vec2> allAntinodeLocations;
+    for (auto itr = frequencyPositions.begin(); itr != frequencyPositions.end(); ++itr)
+    {
+        const std::vector<Vec2>& entries = itr->second;
+        for (size_t leftIndex = 0; leftIndex < entries.size(); ++leftIndex)
+        {
+            for (size_t rightIndex = 0; rightIndex < entries.size(); ++rightIndex)
+            {
+                if (leftIndex != rightIndex)
+                {
+                    const Vec2 diff = entries[rightIndex] - entries[leftIndex];
+                    const Vec2 primaryAntinode = entries[leftIndex] - diff;
+
+                    if (isInBounds(primaryAntinode))
+                        priamryAntinodeLocations.emplace(primaryAntinode);
+
+                    const Vec2 dir = diff / std::gcd(diff.x, diff.y);
+                    for (Vec2 current = entries[leftIndex]; isInBounds(current); current = current + dir)
+                        allAntinodeLocations.emplace(current);
                 }
             }
         }
-        frequencyItr = firstItr;
     }
 
-    std::println("Num antinode locations: {}", antinodeLocations.size());
+    std::println("Num primary antinode locations: {}", priamryAntinodeLocations.size());
+    std::println("Num all antinode locations: {}", allAntinodeLocations.size());
 }
