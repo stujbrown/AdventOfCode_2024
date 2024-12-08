@@ -107,6 +107,9 @@
     <ClInclude Include="src\days\aoc_days.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\days\vec2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="inputs\day1.txt">

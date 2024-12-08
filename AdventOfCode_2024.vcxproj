@@ -151,6 +151,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\days\aoc_days.h" />
+    <ClInclude Include="src\days\vec2.h" />
     <ClInclude Include="src\entry.h" />
   </ItemGroup>
   <ItemGroup>
