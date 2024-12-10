@@ -5,36 +5,42 @@
 
 namespace
 {
+    struct Range 
+    {
+        int l, r;
+        inline size_t length() const { return (r - l) + 1; }
+    };
+
     std::span<int> findSpace(std::vector<int>& diskLayout, size_t spaceRequired, int& searchStartIndex, int searchStopIndex)
     {
-        for (int i = 0, l1 = searchStartIndex, l2 = l1; l2 < searchStopIndex; l1 = l2 + 1, ++i)
+        Range free{ searchStartIndex, searchStartIndex };
+        for (int i = 0; free.r < searchStopIndex; free.l = free.r + 1, ++i)
         {
-            while (l1 < diskLayout.size() && diskLayout[l1] != -1) ++l1;
-            l2 = l1;
-            while (l2 < diskLayout.size() - 1 && diskLayout[l2 + 1] == -1) ++l2;
+            while (free.l < diskLayout.size() && diskLayout[free.l] != -1) ++free.l;
+            free.r = free.l;
+            while (free.r < diskLayout.size() - 1 && diskLayout[free.r + 1] == -1) ++free.r;
             if (i == 0)
-                searchStartIndex = l1;
+                searchStartIndex = free.l;
 
-            if ((l2 - l1) + 1 >= spaceRequired && (l2 < searchStopIndex) && l2 < diskLayout.size())
-                return std::span<int>(diskLayout.begin() + l1, diskLayout.begin() + l1 + spaceRequired);
+            if (free.length() >= spaceRequired && (free.r < searchStopIndex) && free.r < diskLayout.size())
+                return std::span<int>(diskLayout.begin() + free.l, diskLayout.begin() + free.l + spaceRequired);
         }
         return {};
     }
 
-    size_t compact(std::vector<int>&& diskLayout, bool allowFragmentation)
+    size_t compact(std::vector<int> diskLayout, bool allowFragmentation)
     {
         int lStart = 0;
-        for (int r1 = -1, r2 = (int)diskLayout.size() - 1; r2 >= 0; r2 = r1 - 1)
+        for (Range file{ -1, (int)diskLayout.size() - 1 }; file.r >= 0; file.r = file.l - 1)
         {
-            while (r2 >= 0 && diskLayout[r2] == -1) --r2;
-            r1 = r2;
-            while (!allowFragmentation && (r1 > 0 && diskLayout[r1 - 1] == diskLayout[r2])) --r1;
-            const size_t spaceRequired = (r2 - r1) + 1;
+            while (file.r >= 0 && diskLayout[file.r] == -1) --file.r;
+            file.l = file.r;
+            while (!allowFragmentation && (file.l > 0 && diskLayout[file.l - 1] == diskLayout[file.r])) --file.l;
 
-            if (std::span<int> space = findSpace(diskLayout, spaceRequired, lStart, r1); !space.empty())
+            if (std::span<int> space = findSpace(diskLayout, file.length(), lStart, file.l); !space.empty())
             {
-                std::fill(space.begin(), space.end(), diskLayout[r1]);
-                std::fill(diskLayout.begin() + r1, diskLayout.begin() + (r1 + spaceRequired), -1);
+                std::fill(space.begin(), space.end(), diskLayout[file.l]);
+                std::fill(diskLayout.begin() + file.l, diskLayout.begin() + (file.l + file.length()), -1);
             }
         }
 
