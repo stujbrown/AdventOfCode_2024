@@ -11,19 +11,18 @@ namespace
         Vec2 pos;
         Vec2 dir;
         size_t cost;
-
-        std::vector<std::shared_ptr<State>> previous;
+        std::vector<State*> parents;
     };
 
     struct StateSetCompare
     {
-        constexpr inline bool operator()(const std::shared_ptr<State>& lhs, const std::shared_ptr<State>& rhs) const
+        constexpr inline bool operator()(const State* lhs, const State* rhs) const
         {
             return std::tie(lhs->pos, lhs->dir) < std::tie(rhs->pos, rhs->dir); // Ignore cost and path
         }
     };
 
-    inline bool costSorter(const std::shared_ptr<State>& lhs, const std::shared_ptr<State>& rhs)
+    inline bool costSorter(const State* lhs, const State* rhs)
     {
         return lhs->cost > rhs->cost;
     }
@@ -45,13 +44,19 @@ void aoc::day16(std::string_view inputFilePath)
     }
 
     size_t lowestCost = std::numeric_limits<size_t>::max();
-    std::vector<std::shared_ptr<State>> queue, finalStates;
-    std::set<std::shared_ptr<State>, StateSetCompare> visited;
-    queue.emplace_back(new State{ .pos = startPos, .dir = Vec2{ 1, 0 }, .cost = 0 });
+    std::vector<std::unique_ptr<State>> allStates;
+    std::vector<State*> queue, finalStates;
+    std::set<State*, StateSetCompare> visited;
+
+    allStates.push_back(std::unique_ptr<State>(new State{ .pos = startPos, .dir = Vec2{ 1, 0 }, .cost = 0 }));
+    queue.emplace_back(allStates.back().get());
     while (!queue.empty())
     {
-        std::shared_ptr<State> current = queue.back();
+        State* current = queue.back();
         queue.pop_back();
+
+        if (current->cost >= lowestCost)
+            break;
 
         if (current->pos == endPos)
         {
@@ -63,41 +68,37 @@ void aoc::day16(std::string_view inputFilePath)
             continue;
         }
 
-        bool didMerge = false;
         auto existing = visited.find(current);
-        if (existing != visited.end())
-        {
-            if (current->cost > (*existing)->cost)
-                continue;
-            else if (current->cost == (*existing)->cost)
-            {
-                // Merge nodes together
-                auto oldNode = *existing;
-                for (auto otherPrevious : current->previous)
-                    oldNode->previous.emplace_back(otherPrevious);
-
-                current = oldNode;
-                didMerge = true;
-            }
-            else
-                visited.erase(current);
-        }
-        else if (!didMerge)
+        if (existing == visited.end())
             visited.emplace(current);
+        else if (current->cost == (*existing)->cost)
+        {
+            auto oldNode = *existing;
+            for (auto parent : current->parents)
+                oldNode->parents.emplace_back(parent);
+            current = oldNode;
+        }
+        else if (current->cost > (*existing)->cost)
+            continue;
+        else
+            throw std::logic_error{ "Should never hit this case due to cost sorting" };
+
 
         for (const Vec2 dir : std::initializer_list{ current->dir, { -current->dir.y, current->dir.x }, { current->dir.y, -current->dir.x } })
         {
             const Vec2 newPos = current->pos + dir;
             if (map[newPos.y][newPos.x] != '#')
             {
-                std::shared_ptr<State> newState(new State{ .pos = newPos, .dir = dir, .cost = current->cost + ((current->dir == dir) ? 1u : 1001u) });
-                newState->previous.push_back(current);
-                queue.insert(std::upper_bound(queue.cbegin(), queue.cend(), newState, costSorter), newState);
+                allStates.push_back(std::unique_ptr<State>(new State{
+                    .pos = newPos,
+                    .dir = dir,
+                    .cost = current->cost + ((current->dir == dir) ? 1u : 1001u),
+                    .parents {current} }));
+                queue.insert(std::upper_bound(queue.cbegin(), queue.cend(), allStates.back().get(), costSorter), allStates.back().get());
             }
         }
     }
 
-    // Walk routes back
     std::set<Vec2> bestRouteTiles;
     visited.clear();
     queue.clear();
@@ -105,7 +106,7 @@ void aoc::day16(std::string_view inputFilePath)
         queue.push_back(state);
     while (!queue.empty())
     {
-        std::shared_ptr<State> current = queue.back();
+        State* current = queue.back();
         queue.pop_back();
 
         if (visited.contains(current))
@@ -113,7 +114,7 @@ void aoc::day16(std::string_view inputFilePath)
         visited.emplace(current);
 
         bestRouteTiles.emplace(current->pos);
-        for (auto p : current->previous)
+        for (auto p : current->parents)
             queue.push_back(p);
     }
 
