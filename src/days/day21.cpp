@@ -1,7 +1,5 @@
 #include "aoc_days.h"
-#include "vec2.h"
 #include <vector>
-#include <set>
 #include <map>
 #include <array>
 #include <ranges>
